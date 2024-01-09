@@ -1,0 +1,19 @@
+def calculate_years_to_goal(start_amount, annual_contribution, interest_rate, goal_amount):
+    years = 0
+    current_value = start_amount
+    while current_value < goal_amount:
+        current_value += current_value * interest_rate + annual_contribution
+        years += 1
+    return years
+
+# Set the values
+start_amount = 10000
+annual_contribution = 10000
+interest_rate = 0.20  # 5% as a decimal
+goal_amount = 250000
+
+# Calculate the number of years
+years = calculate_years_to_goal(start_amount, annual_contribution, interest_rate, goal_amount)
+
+# Print the result
+print("It will take approximately", years, "years to reach your goal of $", goal_amount)
