@@ -1,0 +1,73 @@
+def calculate_loan_payments(loan_amount, loan_term, interest_rate, compounding_period, payment_period, current_balance=None):
+    """
+    Calculates loan payments, total interest, and payment schedule, including remaining balance.
+
+    Args:
+        loan_amount (float): The principal amount of the loan.
+        loan_term (int): The length of the loan in number of periods (e.g., months, years).
+        interest_rate (float): The annual interest rate.
+        compounding_period (str): The frequency of compounding, e.g., 'monthly', 'yearly', 'weekly', etc.
+        payment_period (str): The frequency of payments, e.g., 'monthly', 'daily', 'weekly', etc.
+        current_balance (float, optional): The current remaining balance on the loan (if already made payments).
+
+    Returns:
+        tuple: A tuple containing:
+            - monthly_payment (float): The amount of each payment.
+            - total_interest (float): The total interest paid over the loan term.
+            - payment_schedule (list): A list of tuples, each containing (period, payment, principal, interest, remaining_balance).
+    """
+
+    # Convert interest rate to decimal and adjust for compounding period
+    interest_rate = interest_rate / 100
+    periods_per_year = {
+        "monthly": 12,
+        "yearly": 1,
+        "weekly": 52,
+        "biweekly": 26,
+        "semi_annually": 2,
+        "quarterly": 4,
+    }
+    interest_rate = interest_rate / periods_per_year[compounding_period]
+
+    # Calculate the number of payment periods
+    number_of_payments = loan_term * periods_per_year[compounding_period] / periods_per_year[payment_period]
+
+    # Calculate the monthly payment using the loan payment formula
+    monthly_payment = loan_amount * (interest_rate / (1 - (1 + interest_rate)**(-number_of_payments)))
+
+    # Initialize variables for payment schedule
+    remaining_balance = current_balance if current_balance else loan_amount
+    total_interest = 0
+    payment_schedule = []
+
+    # Calculate each payment and update the payment schedule
+    for i in range(1, int(number_of_payments) + 1):
+        interest_payment = remaining_balance * interest_rate
+        principal_payment = monthly_payment - interest_payment
+        remaining_balance -= principal_payment
+        total_interest += interest_payment
+        payment_schedule.append((i, monthly_payment, principal_payment, interest_payment, remaining_balance))
+
+    # Print the payment schedule with remaining balance (clearer format)
+    print("\nPayment Schedule:")
+    print("Period   | Payment | Principal  | Interest   | Remaining Balance")
+    print("---------|---------|------------|------------|-----------------")
+    for period, payment, principal, interest, remaining_balance in payment_schedule:
+        print(f"{period:>6} | ${payment:>8.2f} | ${principal:>9.2f} | ${interest:>9.2f} | ${remaining_balance:>15.2f}")
+
+    return monthly_payment, total_interest, payment_schedule
+
+# Example usage
+loan_amount = 42000
+loan_term = 5  # years
+interest_rate = 6  # percent
+compounding_period = "monthly"
+payment_period = "yearly"
+
+monthly_payment, total_interest, payment_schedule = calculate_loan_payments(
+    loan_amount, loan_term, interest_rate, compounding_period, payment_period
+)
+
+# Print results (monthly payment and total interest)
+print("Monthly payment:", monthly_payment)
+print("Total interest:", total_interest)
